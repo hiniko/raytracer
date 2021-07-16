@@ -1,9 +1,9 @@
 package renderer
 
 import (
+	"math"
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -220,7 +220,7 @@ func TestTupleScalarMulti(t *testing.T) {
 	t1 := NewTuple(1.0, 2.0, 3.0, 4.0)
 	r1 := t1.Multi(2.0)
 
-	e1 := NewTuple(1.0, 4.0, 6.0, 8.0)
+	e1 := NewTuple(2.0, 4.0, 6.0, 8.0)
 
 	assert.True(t, r1.Equals(e1), "Scalar multiplication has gone wrong!")
 }
@@ -233,8 +233,103 @@ func TestTupleFractionalMulti(t *testing.T) {
 	t1 := NewTuple(1.0, 2.0, 3.0, 4.0)
 	r1 := t1.Multi(0.5)
 
-	spew.Dump(r1)
 	e1 := NewTuple(0.5, 1, 1.5, 2)
 
 	assert.True(t, r1.Equals(e1), "Frational multiplication has gone wrong!")
+}
+
+// Scenario: Computing the magnitude of vector(1, 0, 0)
+// 	Given v ← vector(1, 0, 0)
+// 	Then magnitude(v) = 1
+
+// Scenario: Computing the magnitude of vector(0, 1, 0)
+// 	Given v ← vector(0, 1, 0)
+// 	Then magnitude(v) = 1
+
+// Scenario: Computing the magnitude of vector(0, 0, 1)
+// 	Given v ← vector(0, 0, 1)
+// 	Then magnitude(v) = 1
+
+// Scenario: Computing the magnitude of vector(1, 2, 3)
+// 	Given v ← vector(1, 2, 3)
+// 	Then magnitude(v) = √14
+
+// Scenario: Computing the magnitude of vector(-1, -2, -3)
+// 	Given v ← vector(-1, -2, -3)
+// 	Then magnitude(v) = √14
+
+func TestVectorMag(t *testing.T) {
+	v1 := NewVector(1, 0, 0)
+	assert.True(t, Equal(1, v1.Mag()))
+
+	v2 := NewVector(0, 1, 0)
+	assert.True(t, Equal(1, v2.Mag()))
+
+	v3 := NewVector(0, 0, 1)
+	assert.True(t, Equal(1, v3.Mag()))
+
+	v4 := NewVector(1, 2, 3)
+	assert.True(t, Equal(math.Sqrt(14), v4.Mag()))
+
+	v5 := NewVector(-1, -2, -3)
+	assert.True(t, Equal(math.Sqrt(14), v5.Mag()))
+}
+
+// Scenario: Normalizing vector(4, 0, 0) gives (1, 0, 0)
+// 	Given v ← vector(4, 0, 0)
+// 	Then normalize(v) = vector(1, 0, 0)
+
+// Scenario: Normalizing vector(1, 2, 3)
+// 	Given v ← vector(1, 2, 3)
+// 	Then normalize(v) = approximately vector(0.26726, 0.53452, 0.80178)
+
+// Scenario: The magnitude of a normalized vector
+// 	Given v ← vector(1, 2, 3)
+// 		When norm ← normalize(v)
+// 	Then magnitude(norm) = 1
+
+func TestVectorNorm(t *testing.T) {
+
+	v1 := NewVector(4, 0, 0).Norm()
+	e1 := NewVector(1, 0, 0)
+	assert.True(t, v1.Equals(e1), "Norm is incorrect")
+
+	v2 := NewVector(1, 2, 3).Norm()
+	e2 := NewVector(0.267261, 0.534522, 0.801783)
+	assert.True(t, v2.Equals(e2), "Norm is incorrect")
+
+	v3 := NewVector(1, 2, 3).Norm()
+	assert.True(t, Equal(1, v3.Mag()), "Normalised magnitude is incorrect")
+}
+
+// Scenario: The dot product of two tuples
+// 	Given a ← vector(1, 2, 3)
+// 		And b ← vector(2, 3, 4)
+// 	Then dot(a, b) = 20
+
+func TestVectorDot(t *testing.T) {
+	v1 := NewVector(1, 2, 3)
+	v2 := NewVector(2, 3, 4)
+
+	assert.Equal(t, 20.0, v1.Dot(v2), "Dot Product is incorrect")
+}
+
+// Scenario: The cross product of two vectors
+// 	Given a ← vector(1, 2, 3)
+// 		And b ← vector(2, 3, 4)
+// 	Then cross(a, b) = vector(-1, 2, -1)
+// 		And cross(b, a) = vector(1, -2, 1)
+
+func TestVectorCross(t *testing.T) {
+	v1 := NewVector(1, 2, 3)
+	v2 := NewVector(2, 3, 4)
+
+	r1 := v1.Cross(v2)
+	r2 := v2.Cross(v1)
+
+	e1 := NewVector(-1, 2, -1)
+	e2 := NewVector(1, -2, 1)
+
+	assert.True(t, r1.Equals(e1), "Cross Product is incorrect")
+	assert.True(t, r2.Equals(e2), "Cross Product is incorrect")
 }

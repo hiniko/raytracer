@@ -1,5 +1,7 @@
 package renderer
 
+import "math"
+
 type Tuple struct {
 	X, Y, Z, W float64
 }
@@ -65,6 +67,34 @@ func (t *Tuple) Multi(m float64) Tuple {
 		Y: t.Y * m,
 		Z: t.Z * m,
 		W: t.W * m,
+	}
+}
+
+func (t *Tuple) Mag() float64 {
+	return math.Sqrt(t.X*t.X + t.Y*t.Y + t.Z*t.Z)
+}
+
+func (t *Tuple) Norm() Tuple {
+	mag := t.Mag()
+
+	return Tuple{
+		X: t.X / mag,
+		Y: t.Y / mag,
+		Z: t.Z / mag,
+		W: t.W / mag,
+	}
+}
+
+func (t *Tuple) Dot(t2 *Tuple) float64 {
+	return t.X*t2.X + t.Y*t2.Y + t.Z*t2.Z + t.W + t2.W
+}
+
+func (t *Tuple) Cross(t2 *Tuple) Tuple {
+	return Tuple{
+		X: t.Y*t2.Z - t.Z*t2.Y,
+		Y: t.Z*t2.X - t.X*t2.Z,
+		Z: t.X*t2.Y - t.Y*t2.X,
+		W: 0,
 	}
 }
 
