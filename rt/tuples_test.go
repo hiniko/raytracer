@@ -345,3 +345,15 @@ func TestVectorCross(t *testing.T) {
 	assert.True(t, r1.Equals(e1), "Cross Product is incorrect")
 	assert.True(t, r2.Equals(e2), "Cross Product is incorrect")
 }
+
+// Scenario: Colors are (red, green, blue) tuples Given c ← color(-0.5, 0.4, 1.7)
+// Then c.red = -0.5
+// And c.green = 0.4 And c.blue = 1.7
+func TestTupleColor(t *testing.T) {
+	c1 := NewColor(-0.5, 0.4, 1.7, 0)
+
+	assert.True(t, Equal(-0.5, c1.X))
+	assert.True(t, Equal(0.4, c1.Y))
+	assert.True(t, Equal(1.7, c1.Z))
+	assert.True(t, Equal(0, c1.W))
+}

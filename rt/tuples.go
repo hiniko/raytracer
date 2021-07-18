@@ -9,6 +9,10 @@ type Tuple struct {
 	X, Y, Z, W float64
 }
 
+type Point = Tuple
+type Vector = Tuple
+type Color = Tuple // A color is basically a tuple right? Sure it doesn't say rgba but it's basically the same...
+
 func (t *Tuple) IsVector() bool {
 	return t.W == 0
 }
@@ -116,13 +120,14 @@ func NewTuple(x, y, z, w float64) *Tuple {
 	return t
 }
 
-type Point = Tuple
-type Vector = Tuple
-
 func NewPoint(x, y, z float64) *Point {
 	return NewTuple(x, y, z, 1)
 }
 
 func NewVector(x, y, z float64) *Vector {
 	return NewTuple(x, y, z, 0)
+}
+
+func NewColor(r, g, b, a float64) *Color {
+	return NewTuple(r, g, b, a)
 }
