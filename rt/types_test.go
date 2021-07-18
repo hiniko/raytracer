@@ -1,4 +1,4 @@
-package renderer
+package rt
 
 import (
 	"math"
@@ -114,6 +114,18 @@ func TestTupleAdd(t *testing.T) {
 	assert.True(t, Equal(vE.Y, vR.Y))
 	assert.True(t, Equal(vE.Z, vR.Z))
 	assert.True(t, vR.IsVector())
+
+	// Test Negative adds
+	v4 := NewVector(1.0, 2.0, 3.0)
+	v5 := NewVector(0.0, -1.0, 0.0)
+
+	vE2 := Vector{X: 1.0, Y: 1.0, Z: 3.0, W: 0}
+	vR2 := v4.Add(v5)
+
+	assert.True(t, Equal(vE2.X, vR2.X))
+	assert.True(t, Equal(vE2.Y, vR2.Y))
+	assert.True(t, Equal(vE2.Z, vR2.Z))
+	assert.True(t, vR2.IsVector())
 
 	// Add a Point to a Point and get a point
 	p1 := NewPoint(1.0, 2.0, 3.0)

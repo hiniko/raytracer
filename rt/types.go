@@ -1,6 +1,9 @@
-package renderer
+package rt
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 type Tuple struct {
 	X, Y, Z, W float64
@@ -18,7 +21,7 @@ func (t *Tuple) Equals(t2 *Tuple) bool {
 	return Equal(t.X, t2.X) && Equal(t.Y, t2.Y) && Equal(t.Z, t2.Z) && Equal(t.W, t2.W)
 }
 
-func (t *Tuple) Add(t2 *Tuple) Tuple {
+func (t *Tuple) Add(t2 *Tuple) *Tuple {
 
 	r := Tuple{
 		X: t.X + t2.X,
@@ -31,10 +34,10 @@ func (t *Tuple) Add(t2 *Tuple) Tuple {
 		r.W = 1
 	}
 
-	return r
+	return &r
 }
 
-func (t *Tuple) Sub(t2 *Tuple) Tuple {
+func (t *Tuple) Sub(t2 *Tuple) *Tuple {
 
 	r := Tuple{
 		X: t.X - t2.X,
@@ -49,7 +52,7 @@ func (t *Tuple) Sub(t2 *Tuple) Tuple {
 		r.W = 1
 	}
 
-	return r
+	return &r
 }
 
 func (t *Tuple) Neg() Tuple {
@@ -61,8 +64,8 @@ func (t *Tuple) Neg() Tuple {
 	}
 }
 
-func (t *Tuple) Multi(m float64) Tuple {
-	return Tuple{
+func (t *Tuple) Multi(m float64) *Tuple {
+	return &Tuple{
 		X: t.X * m,
 		Y: t.Y * m,
 		Z: t.Z * m,
@@ -74,10 +77,10 @@ func (t *Tuple) Mag() float64 {
 	return math.Sqrt(t.X*t.X + t.Y*t.Y + t.Z*t.Z)
 }
 
-func (t *Tuple) Norm() Tuple {
+func (t *Tuple) Norm() *Tuple {
 	mag := t.Mag()
 
-	return Tuple{
+	return &Tuple{
 		X: t.X / mag,
 		Y: t.Y / mag,
 		Z: t.Z / mag,
@@ -89,13 +92,17 @@ func (t *Tuple) Dot(t2 *Tuple) float64 {
 	return t.X*t2.X + t.Y*t2.Y + t.Z*t2.Z + t.W + t2.W
 }
 
-func (t *Tuple) Cross(t2 *Tuple) Tuple {
-	return Tuple{
+func (t *Tuple) Cross(t2 *Tuple) *Tuple {
+	return &Tuple{
 		X: t.Y*t2.Z - t.Z*t2.Y,
 		Y: t.Z*t2.X - t.X*t2.Z,
 		Z: t.X*t2.Y - t.Y*t2.X,
 		W: 0,
 	}
+}
+
+func (t *Tuple) ToString() string {
+	return fmt.Sprintf("X: %.4f, Y: %.4f, Z: %.4f, W: %.4f", t.X, t.Y, t.Z, t.W)
 }
 
 func NewTuple(x, y, z, w float64) *Tuple {
