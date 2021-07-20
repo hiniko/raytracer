@@ -77,14 +77,14 @@ func (t *Tuple) Multi(m float64) *Tuple {
 	}
 }
 
-func (t *Tuple) Mag() float64 {
+func (t *Vector) Mag() float64 {
 	return math.Sqrt(t.X*t.X + t.Y*t.Y + t.Z*t.Z)
 }
 
-func (t *Tuple) Norm() *Tuple {
+func (t *Vector) Norm() *Vector {
 	mag := t.Mag()
 
-	return &Tuple{
+	return &Vector{
 		X: t.X / mag,
 		Y: t.Y / mag,
 		Z: t.Z / mag,
@@ -92,17 +92,35 @@ func (t *Tuple) Norm() *Tuple {
 	}
 }
 
-func (t *Tuple) Dot(t2 *Tuple) float64 {
+func (t *Vector) Dot(t2 *Vector) float64 {
 	return t.X*t2.X + t.Y*t2.Y + t.Z*t2.Z + t.W + t2.W
 }
 
-func (t *Tuple) Cross(t2 *Tuple) *Tuple {
-	return &Tuple{
+func (t *Vector) Cross(t2 *Vector) *Vector {
+	return &Vector{
 		X: t.Y*t2.Z - t.Z*t2.Y,
 		Y: t.Z*t2.X - t.X*t2.Z,
 		Z: t.X*t2.Y - t.Y*t2.X,
 		W: 0,
 	}
+}
+
+// hadamard product for colors
+func (c *Color) Prod(c2 *Color) Color {
+	return Color{
+		X: c.X * c2.X,
+		Y: c.Y * c2.Y,
+		Z: c.Z * c2.Z,
+		W: c.W * c2.W,
+	}
+}
+
+func (t *Tuple) ToRGB255String() string {
+	return fmt.Sprintf("%s %s %s",
+		F64ToStr_RGB255(t.X),
+		F64ToStr_RGB255(t.Y),
+		F64ToStr_RGB255(t.Z),
+	)
 }
 
 func (t *Tuple) ToString() string {

@@ -357,3 +357,73 @@ func TestTupleColor(t *testing.T) {
 	assert.True(t, Equal(1.7, c1.Z))
 	assert.True(t, Equal(0, c1.W))
 }
+
+// Scenario: Adding colors
+// 	Given c1 ← color(0.9, 0.6, 0.75)
+// 		And c2 ← color(0.7, 0.1, 0.25)
+// 	Then c1 + c2 = color(1.6, 0.7, 1.0)
+func TestTupleColorAdd(t *testing.T) {
+	c1 := NewColor(0.9, 0.6, 0.75, 0)
+	c2 := NewColor(0.7, 0.1, 0.25, 0)
+
+	r1 := c1.Add(c2)
+
+	e1 := NewColor(1.6, 0.7, 1.0, 0)
+
+	assert.True(t, r1.Equals(e1), "Color addition failed")
+}
+
+// Scenario: Subtracting colors
+// 	Given c1 ← color(0.9, 0.6, 0.75)
+// 		And c2 ← color(0.7, 0.1, 0.25)
+// 	Then c1 - c2 = color(0.2, 0.5, 0.5)
+func TestTupleColorSub(t *testing.T) {
+
+	c1 := NewColor(0.9, 0.6, 0.75, 0)
+	c2 := NewColor(0.7, 0.1, 0.25, 0)
+
+	r1 := c1.Sub(c2)
+
+	e1 := NewColor(0.2, 0.5, 0.5, 0)
+
+	assert.True(t, r1.Equals(e1), "Color subtraction failed")
+
+}
+
+// Scenario: Multiplying a color by a scalar
+// 	Given c ← color(0.2, 0.3, 0.4)
+// 	Then c * 2 = color(0.4, 0.6, 0.8)
+func TestTupleColorMulti(t *testing.T) {
+	c1 := NewColor(0.2, 0.3, 0.4, 0)
+
+	r1 := c1.Multi(2)
+
+	e1 := NewColor(0.4, 0.6, 0.8, 0)
+
+	assert.True(t, r1.Equals(e1), "Color multi failed")
+}
+
+// Scenario: Multiplying colors
+// 	Given c1 ← color(1, 0.2, 0.4)
+// 		And c2 ← color(0.9, 1, 0.1)
+// 	Then c1 * c2 = color(0.9, 0.2, 0.04)
+
+func TestTupleColorProduct(t *testing.T) {
+	c1 := NewColor(1, 0.2, 0.4, 0)
+	c2 := NewColor(0.9, 1, 0.1, 0)
+
+	r1 := c1.Prod(c2)
+
+	e1 := NewColor(0.9, 0.2, 0.04, 0)
+
+	assert.True(t, r1.Equals(e1), "Color product failed")
+}
+
+func TestTupleToRGS255String(t *testing.T) {
+
+	t1 := NewTuple(1, 2, 3, 4)
+
+	r := t1.ToRGB255String()
+
+	assert.Equal(t, "255 255 255", r, "Tuple to RGB 255 String is incorrect")
+}
