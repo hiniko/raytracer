@@ -76,7 +76,7 @@ func TestCanvasPPMHeader(t *testing.T) {
 //	    0 0 0 0 0 0 0 0 0 0 0 0 0 0 255
 //	    """
 
-func TestCanvasData(t *testing.T) {
+func TestCanvasPPMNewLineAfterRow(t *testing.T) {
 	ca := NewCanvas(5, 3)
 
 	c1 := NewColor(1.5, 0, 0, 0)
@@ -119,7 +119,7 @@ func TestCanvasData(t *testing.T) {
 // 		255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204
 // 		153 255 20
 
-func TestCanvasWritingPPM(t *testing.T) {
+func TestCanvasPPMLineWidth70Chars(t *testing.T) {
 
 	ca := NewCanvas(10, 20)
 
@@ -148,8 +148,9 @@ func TestCanvasWritingPPM(t *testing.T) {
 
 	// Read PPM String to ensure it conforms
 	s := bufio.NewScanner(strings.NewReader(output))
-	line := 1
+	line := 0
 	for s.Scan() {
+		line++
 
 		switch line {
 		case 1:
