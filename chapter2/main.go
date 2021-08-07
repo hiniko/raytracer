@@ -37,7 +37,7 @@ func main() {
 
 	proj := Projectile{
 		Position: rt.NewVector(0, 0.01, 0),
-		Velocity: rt.NewVector(50, 150, 0),
+		Velocity: rt.NewVector(50, 150, 0).Norm(),
 	}
 
 	ca := rt.NewCanvas(1000, 1000)
