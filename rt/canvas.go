@@ -6,7 +6,7 @@ import (
 )
 
 const OUTPUT_DIR = "output/"
-const PPM_MAX_CHARS = 69 // PPM Compat line width is 70, so we need to match 69 for the newline
+const PPM_MAX_CHARS = 70 // PPM Compat line width is 70, so we need to match 69 for the newline
 
 type Canvas struct {
 	Height, Width int
@@ -24,13 +24,22 @@ func NewCanvas(width, height int) *Canvas {
 }
 
 func (ca *Canvas) Set(x, y int, c *Color) {
-	ca.Data[x+(y*ca.Width)] = c
+	idx := x + (y * ca.Width)
+	if idx < 0 || idx >= len(ca.Data) {
+		return
+	}
+	ca.Data[idx] = c
 }
 
 func (ca *Canvas) Get(x, y int) *Color {
-	return ca.Data[x+(y*ca.Width)]
+	idx := x + (y * ca.Width)
+	if idx < 0 || idx > len(ca.Data) {
+		return nil
+	}
+	return ca.Data[idx]
 }
 
+// I am dumb and this could be better I'm sure.
 func (ca *Canvas) ToPPM() string {
 
 	var buf strings.Builder
@@ -40,7 +49,7 @@ func (ca *Canvas) ToPPM() string {
 	buf.WriteString("255\n")
 
 	// Build PPM Data
-	// clw := 0 // current line width. For compatability each line can only be 70 chars
+	clw := 0 // current line width. For compatability each line can only be 70 chars
 
 	e := NewColor(0, 0, 0, 0).ToRGB255String() // Empty color for missing data
 
@@ -56,24 +65,70 @@ func (ca *Canvas) ToPPM() string {
 			s = d.ToRGB255String()
 		}
 
-		if p > 0 && (p+1)%(ca.Width) == 0 {
-			fmt.Printf("nl at %d", p)
-			buf.WriteString(s)
-			buf.WriteString("\n")
-		} else {
-			buf.WriteString(s + " ")
+		// Check for eol, that is are we at the end of a row
+		eol := (p > 0 && (p+1)%(ca.Width) == 0)
+
+		// Are we over PPM_MAX_CHARS
+		if clw+len(s) > PPM_MAX_CHARS {
+			pts := strings.Split(s, " ")
+			for i, p := range pts {
+				l := clw + len(p)
+
+				var np string
+				var npls = 0
+
+				if i+1 < len(pts) {
+					np = pts[i+1]
+					npls = l + len(np) // next part length with space
+				} else {
+					np = ""
+				}
+
+				// If adding this part is equal or over max chars
+				if l >= PPM_MAX_CHARS {
+					buf.WriteString("\n")
+					buf.WriteString(p + " ")
+					clw = len(p) + 1
+
+					// Look ahead and check if we can fix the next chunk
+					// if not new line and print with a space
+				} else if np != "" && npls == PPM_MAX_CHARS {
+					buf.WriteString(p)
+					buf.WriteString("\n")
+					clw = 0
+				} else if np != "" && npls > PPM_MAX_CHARS {
+					buf.WriteString("\n")
+					buf.WriteString(p + " ")
+					clw = len(p) + 1
+
+				} else {
+					if eol {
+						buf.WriteString(p)
+						clw = 0
+					} else {
+						buf.WriteString(p + " ")
+						clw += len(p) + 1
+					}
+				}
+			}
+
+			s = "" // set the input string to empty so we can handle eol
 		}
 
-		// nlw := clw + len(s) // New line width after we have written our colour data
-
-		// if nlw >= PPM_MAX_CHARS { // -1 to allow for new line byte
-		// 	buf.WriteString("\n")
-		// 	buf.WriteString(s)
-		// 	continue
-		// }
+		if eol && s == "" {
+			buf.WriteString("\n")
+			clw = 0
+		} else if eol && s != "" {
+			buf.WriteString(s)
+			buf.WriteString("\n")
+			clw = 0
+		} else {
+			if s != "" {
+				buf.WriteString(s + " ")
+				clw += len(s) + 1
+			}
+		}
 	}
 
 	return buf.String()
-	// TODO: Maybe stick with the book and spit this shit out as strings first. Unsure of the agressive line breaking here after all
-
 }

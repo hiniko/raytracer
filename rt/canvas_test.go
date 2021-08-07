@@ -117,34 +117,25 @@ func TestCanvasPPMNewLineAfterRow(t *testing.T) {
 // 		255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204
 // 		153 255 204 153 255 204 153 255 204 153 255 204 153
 // 		255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204
-// 		153 255 20
+// 		153 255 204 153 255 204 153 255 204 153 255 204 15
 
 func TestCanvasPPMLineWidth70Chars(t *testing.T) {
 
-	ca := NewCanvas(10, 20)
+	ca := NewCanvas(10, 2)
 
 	// Create an cavas with data
-	colors := make([]*Color, 5)
-	colors[0] = NewColor(1, 0, 0, 1)
-	colors[1] = NewColor(0, 1, 0, 1)
-	colors[2] = NewColor(0, 0, 1, 1)
-	colors[3] = NewColor(0, 0, 0, 1)
-	colors[4] = NewColor(1, 1, 1, 1)
+	color := NewColor(1, 0.8, 0.6, 1)
 
-	cur, p := 0, 0
 	for y := 0; y < ca.Height; y++ {
 		for x := 0; x < ca.Width; x++ {
-			if p%10 == 0 {
-				cur = ((cur + 1) % 5)
-			}
-
-			ca.Set(x, y, colors[cur])
-			p++
+			ca.Set(x, y, color)
 		}
 	}
 
 	// Convert to PPM
 	output := ca.ToPPM()
+
+	WriteFile("ppm_test.ppm", output)
 
 	// Read PPM String to ensure it conforms
 	s := bufio.NewScanner(strings.NewReader(output))
@@ -153,16 +144,20 @@ func TestCanvasPPMLineWidth70Chars(t *testing.T) {
 		line++
 
 		switch line {
-		case 1:
-			assert.Equal(t, "P3", s.Text())
-		case 2:
-			assert.Equal(t, "10 20", s.Text())
-		case 3:
-			assert.Equal(t, "255", s.Text())
-		default:
-			assert.Equal(t, 70, len(s.Text()))
+		case 4:
+			assert.Equal(t, "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204", s.Text())
+
+		case 5:
+			assert.Equal(t, "153 255 204 153 255 204 153 255 204 153 255 204 153", s.Text())
+
+		case 6:
+			assert.Equal(t, "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204", s.Text())
+
+		case 7:
+			assert.Equal(t, "153 255 204 153 255 204 153 255 204 153 255 204 153", s.Text())
+
 		}
-
 	}
-
 }
+
+//assert.LessOrEqual(t, len(s.Text()), 70)
