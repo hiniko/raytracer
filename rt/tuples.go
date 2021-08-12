@@ -93,7 +93,7 @@ func (t *Vector) Norm() *Vector {
 }
 
 func (t *Vector) Dot(t2 *Vector) float64 {
-	return t.X*t2.X + t.Y*t2.Y + t.Z*t2.Z + t.W + t2.W
+	return t.X*t2.X + t.Y*t2.Y + t.Z*t2.Z + t.W*t2.W
 }
 
 func (t *Vector) Cross(t2 *Vector) *Vector {
