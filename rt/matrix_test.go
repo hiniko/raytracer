@@ -207,3 +207,41 @@ func TestMatrixIdentityTuple(t *testing.T) {
 
 	assert.True(t, tr.Equals(t1))
 }
+
+// Scenario: Transposing a matrix
+// Given the following matrix A:
+// |0|9|3|0|
+// |9|8|0|8|
+// |1|8|5|3|
+// |0|0|5|8|
+// Then transpose(A) is the following matrix:
+// |0|9|1|0|
+// |9|8|8|0|
+// |3|0|5|5|
+// |0|8|3|8|
+func TestMatrixTranspost(t *testing.T) {
+	m4a := NewMatrix4([]float64{
+		0, 9, 3, 0,
+		9, 8, 0, 8,
+		1, 8, 5, 3,
+		0, 0, 5, 8,
+	})
+
+	m4e := NewMatrix4([]float64{
+		0, 9, 1, 0,
+		9, 8, 8, 0,
+		3, 0, 5, 5,
+		0, 8, 3, 8,
+	})
+
+	m4r := m4a.Trans()
+	assert.True(t, m4r.Equal(m4e))
+}
+
+// Scenario: Transposing the identity matrix
+// Given A ← transpose(identity_matrix)
+// Then A = identity_matrix
+func TestMatrixIdentityTranspost(t *testing.T) {
+	m4r := m4i.Trans()
+	assert.True(t, m4r.Equal(m4i))
+}

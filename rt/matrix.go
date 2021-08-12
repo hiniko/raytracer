@@ -12,6 +12,7 @@ type Matrix interface {
 	Equal(m Matrix) bool
 	Multi(m Matrix) Matrix
 	TMulti(t *Tuple) *Tuple
+	Trans() Matrix
 }
 
 func MatrixCheckSet(v []float64, m Matrix) {
@@ -220,11 +221,80 @@ func (a *Matrix4) TMulti(b *Tuple) *Tuple {
 }
 
 func (a *Matrix3) TMulti(b *Tuple) *Tuple {
-	return nil
+	ar, _ := a.Dims()
+
+	rd := make([]float64, 3)
+
+	for t := 0; t < ar; t++ {
+		rd[t] =
+			a.At(t, 0)*b.X +
+				a.At(t, 1)*b.Y +
+				a.At(t, 2)*b.Z
+	}
+
+	return NewTuple(rd[0], rd[1], rd[2], 1)
 }
 
 func (a *Matrix2) TMulti(b *Tuple) *Tuple {
-	return nil
+	ar, _ := a.Dims()
+
+	rd := make([]float64, 2)
+
+	for t := 0; t < ar; t++ {
+		rd[t] =
+			a.At(t, 0)*b.X +
+				a.At(t, 1)*b.Y
+	}
+
+	return NewTuple(rd[0], rd[1], 0, 1)
+}
+
+func (a *Matrix4) Trans() Matrix {
+	ar, ac := a.Dims()
+
+	rd := make([]float64, ar*ac)
+
+	o := 0
+	for r := 0; r < ar; r++ {
+		rd[(0*ar)+o] = a.At(r, 0)
+		rd[(1*ar)+o] = a.At(r, 1)
+		rd[(2*ar)+o] = a.At(r, 2)
+		rd[(3*ar)+o] = a.At(r, 3)
+		o++
+	}
+
+	return NewMatrix4(rd)
+}
+
+func (a *Matrix3) Trans() Matrix {
+	ar, ac := a.Dims()
+
+	rd := make([]float64, ar*ac)
+
+	o := 0
+	for r := 0; r < ar; r++ {
+		rd[(0*ar)+o] = a.At(r, 0)
+		rd[(1*ar)+o] = a.At(r, 1)
+		rd[(2*ar)+o] = a.At(r, 2)
+		o++
+	}
+
+	return NewMatrix3(rd)
+}
+
+func (a *Matrix2) Trans() Matrix {
+	ar, ac := a.Dims()
+
+	rd := make([]float64, ar*ac)
+
+	o := 0
+	for r := 0; r < ar; r++ {
+		rd[(0*ar)+o] = a.At(r, 0)
+		rd[(1*ar)+o] = a.At(r, 1)
+		o++
+	}
+
+	return NewMatrix2(rd)
 }
 
 func NewMatrix2(values []float64) *Matrix2 {
