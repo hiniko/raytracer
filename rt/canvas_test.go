@@ -2,7 +2,6 @@ package rt
 
 import (
 	"bufio"
-	"fmt"
 	"strings"
 	"testing"
 
@@ -88,8 +87,6 @@ func TestCanvasPPMNewLineAfterRow(t *testing.T) {
 	ca.Set(4, 2, c3)
 
 	ppm := ca.ToPPM()
-
-	fmt.Printf("%s", ppm)
 
 	s := bufio.NewScanner(strings.NewReader(ppm))
 	line := 0

@@ -13,6 +13,12 @@ type Matrix interface {
 	Multi(m Matrix) Matrix
 	TMulti(t *Tuple) *Tuple
 	Trans() Matrix
+	Deter() float64
+	SubMat(row, col int) Matrix
+	Minor(row, col int) float64
+	Cofactor(row, col int) float64
+	IsInvertable() bool
+	Inverse() Matrix
 }
 
 func MatrixCheckSet(v []float64, m Matrix) {
@@ -54,10 +60,26 @@ func MatrixEqual(a Matrix, b Matrix) bool {
 	return true
 }
 
+func MatrixDeter(m Matrix) float64 {
+
+	r, c := m.Dims()
+
+	// 2x2 edge case
+	if r == 2 && c == 2 {
+		return (m.At(0, 0) * m.At(1, 1)) - (m.At(0, 1) * m.At(1, 0))
+	}
+
+	var d float64
+	for ci := 0; ci < c; ci++ {
+		d += m.At(0, ci) * m.Cofactor(0, ci)
+	}
+	return d
+}
+
 func MatrixCheckBounds(row, col int, m Matrix) {
 
 	mr, mc := m.Dims()
-	if row < 0 || col < 0 || row >= mr || col >= mc {
+	if row < 0 || col < 0 || row > mr || col > mc {
 		panic(fmt.Sprintf("Invalid access to matrix data: Tried %d:%d, on %d:%d", row, col, mr, mc))
 	}
 }
@@ -297,6 +319,130 @@ func (a *Matrix2) Trans() Matrix {
 	return NewMatrix2(rd)
 }
 
+// Row and col here refer to which row / col to delete
+func (a *Matrix3) SubMat(row, col int) Matrix {
+	ar, ac := a.Dims()
+
+	if row > ar-1 || col > ac-1 {
+		panic(fmt.Sprintf("submatrix out of bounds, mat dims %d, %d got %d, %d",
+			ar, ac, row, col))
+	}
+
+	rd := make([]float64, 4)
+
+	i := 0
+	for r := 0; r < ar; r++ {
+		if r == row {
+			continue
+		}
+		for c := 0; c < ac; c++ {
+			if c == col {
+				continue
+			}
+			rd[i] = a.At(r, c)
+			i++
+		}
+	}
+
+	return NewMatrix2(rd)
+}
+
+// Row and col here refer to which row / col to delete
+func (a *Matrix4) SubMat(row, col int) Matrix {
+	ar, ac := a.Dims()
+
+	if row > ar-1 || col > ac-1 {
+		panic(fmt.Sprintf("submatrix out of bounds, mat dims %d, %d got %d, %d",
+			ar, ac, row, col))
+	}
+
+	rd := make([]float64, 9)
+
+	i := 0
+	for r := 0; r < ar; r++ {
+		if r == row {
+			continue
+		}
+		for c := 0; c < ac; c++ {
+			if c == col {
+				continue
+			}
+			rd[i] = a.At(r, c)
+			i++
+		}
+	}
+	return NewMatrix3(rd)
+}
+
+func (a *Matrix3) Cofactor(row, col int) float64 {
+	if (row+col)%2 > 0 {
+		return -a.Minor(row, col)
+	} else {
+		return a.Minor(row, col)
+	}
+}
+
+func (a *Matrix4) Cofactor(row, col int) float64 {
+	if (row+col)%2 > 0 {
+		return -a.Minor(row, col)
+	} else {
+		return a.Minor(row, col)
+	}
+}
+
+func (a *Matrix3) Minor(row, col int) float64 {
+	return a.SubMat(row, col).Deter()
+}
+
+func (a *Matrix4) Minor(row, col int) float64 {
+	return a.SubMat(row, col).Deter()
+}
+
+func (a *Matrix2) Deter() float64 {
+	return MatrixDeter(a)
+}
+
+func (a *Matrix3) Deter() float64 {
+	return MatrixDeter(a)
+}
+
+func (a *Matrix4) Deter() float64 {
+	return MatrixDeter(a)
+}
+
+func (a *Matrix2) IsInvertable() bool {
+	return !Equal(a.Deter(), 0)
+}
+
+func (a *Matrix3) IsInvertable() bool {
+	return !Equal(a.Deter(), 0)
+}
+
+func (a *Matrix4) IsInvertable() bool {
+	return !Equal(a.Deter(), 0)
+}
+
+func (a *Matrix4) Invert() Matrix {
+
+	if !a.IsInvertable() {
+		panic(fmt.Sprintf("Matrix is not invertable: deter = %f", a.Deter()))
+	}
+
+	r, c := a.Dims()
+	rd := make([]float64, r*c)
+	d := a.Deter()
+
+	for ri := 0; ri < r; ri++ {
+		for ci := 0; ci < c; ci++ {
+			co := a.Cofactor(ri, ci)
+			rd[ci*r+ri] = co / d
+		}
+	}
+
+	return NewMatrix4(rd)
+}
+
+// New Matrix helpers
 func NewMatrix2(values []float64) *Matrix2 {
 	m := new(Matrix2)
 	m.Set(values)
@@ -316,6 +462,8 @@ func NewMatrix4(values []float64) *Matrix4 {
 }
 
 // Useful matricies
+
+// M4 Identity
 var m4i = NewMatrix4([]float64{
 	1, 0, 0, 0,
 	0, 1, 0, 0,

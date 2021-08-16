@@ -40,7 +40,7 @@ func FileExists(filename string) bool {
 	if os.IsNotExist(err) {
 		return false
 	}
-	return !info.IsDir()
+	return info != nil && !info.IsDir()
 }
 
 func WriteFile(filename string, contents string) error {
@@ -88,7 +88,7 @@ func WriteFile(filename string, contents string) error {
 		fmt.Printf("Failed to write data to file %s: %s", fn, err.Error())
 		return err
 	} else {
-		fmt.Printf("Wrote %d bytes to %s", n, fn)
+		fmt.Printf("Wrote %d bytes to %s \n", n, fn)
 		return nil
 	}
 }
