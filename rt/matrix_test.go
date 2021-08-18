@@ -3,7 +3,6 @@ package rt
 import (
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -509,41 +508,118 @@ func TestMatrix4Inverse(t *testing.T) {
 		1, -3, 7, 4,
 	})
 
+	m4deter := m4.Deter()
+
 	m4i := m4.Invert()
 
-	m4cod := make([]float64, 16)
+	assert.True(t, Equal(m4deter, 532.0))
+	assert.True(t, Equal(m4.Deter(), 532.0), "Deter of A")
+	assert.True(t, Equal(m4.Cofactor(2, 3), -160.0), "Cofactor of A[2,3]")
+	var e1 float64 = -160.0 / 532.0
 
-	for i := 0; i < 4; i++ {
-		for j := 0; j < 4; j++ {
-			m4cod[i*4+j] = m4.Cofactor(i, j)
-		}
-	}
+	assert.True(t, Equal(m4i.At(3, 2), e1), "B[3,2] is incorrect, expected %f, got %f", e1, m4i.At(3, 2))
+	assert.True(t, Equal(m4.Cofactor(3, 2), 105.0), "Cofactor of B[3,2]")
 
-	m4cot := NewMatrix4(m4cod).Trans()
+	var e2 float64 = 105.0 / 532.0
+	assert.True(t, Equal(m4i.At(2, 3), e2), "B[2,3] is incorrect, expected %f, got %f", e2, m4i.At(2, 3))
+}
 
-	m4d := make([]float64, 16)
+// Scenario: Calculating the inverse of another matrix
+// Given the following 4x4 matrix A:
+// | 8|-5| 9| 2|
+// | 7| 5| 6| 1|
+// |-6| 0| 9| 6|
+// |-3| 0|-9|-4|
+// Then inverse(A) is the following 4x4 matrix:
+// | -0.15385 | -0.15385 | -0.28205 | -0.53846 |
+// | -0.07692 |  0.12308 |  0.02564 |  0.03077 |
+// |  0.35897 |  0.35897 |  0.43590 |  0.92308 |
+// | -0.69231 | -0.69231 | -0.76923 | -1.92308 |
 
-	for i := 0; i < 4; i++ {
-		for j := 0; j < 4; j++ {
-			m4d[i*4+j] = m4cod[i*4+j] / 532.0
-		}
-	}
+// Scenario: Calculating the inverse of a third matrix
+// Given the following 4x4 matrix A:
+// | 9| 3| 0| 9|
+// |-5|-2|-6|-3|
+// |-4| 9| 6| 4|
+// |-7| 6| 6| 2|
+// Then inverse(A) is the following 4x4 matrix:
+// | -0.04074 | -0.07778 |  0.14444 | -0.22222 |
+// | -0.07778 |  0.03333 |  0.36667 | -0.33333 |
+// | -0.02901 | -0.14630 | -0.10926 | 0.12963 |
+// |  0.17778 |  0.06667 | -0.26667 | 0.33333 |
 
-	// WHY ARE THESE DIFFERENT!
-	spew.Dump(m4cod, m4cot, m4d, m4i)
+func TestMatrix4ExtraInversions(t *testing.T) {
 
-	assert.True(t, Equal(m4.Deter(), 532), "Deter of A")
-	assert.True(t, Equal(m4.Cofactor(2, 3), -160), "Cofactor of A[2,3]")
-	assert.True(t, Equal(m4i.At(3, 2), -160/532), "B[3,2] is off")
-	assert.True(t, Equal(m4.Cofactor(3, 2), 105), "Cofactor of B[3,2]")
-	assert.True(t, Equal(m4i.At(2, 3), 105/532), "B[2,3] is off")
-
-	m4ie := NewMatrix4([]float64{
-		0.21805, 0.45113, 0.24060, -0.04511,
-		-0.80827, -1.45677, -0.44361, 0.52068,
-		-0.07895, -0.22368, -0.05263, 0.19737,
-		-0.52256, -0.81391, -0.30075, 0.30639,
+	m41 := NewMatrix4([]float64{
+		8, -5, 9, 2,
+		7, 5, 6, 1,
+		-6, 0, 9, 6,
+		-3, 0, -9, -4,
 	})
 
-	assert.True(t, m4i.Equal(m4ie))
+	m41i := m41.Invert()
+
+	m41ie := NewMatrix4([]float64{
+		-0.15385, -0.15385, -0.28205, -0.53846,
+		-0.07692, 0.12308, 0.02564, 0.03077,
+		0.35897, 0.35897, 0.43590, 0.92308,
+		-0.69231, -0.69231, -0.76923, -1.92308,
+	})
+
+	assert.True(t, m41i.Equal(m41ie))
+
+	m42 := NewMatrix4([]float64{
+		9, 3, 0, 9,
+		-5, -2, -6, -3,
+		-4, 9, 6, 4,
+		-7, 6, 6, 2,
+	})
+
+	m42i := m42.Invert()
+
+	m42ie := NewMatrix4([]float64{
+		-0.04074, -0.07778, 0.14444, -0.22222,
+		-0.07778, 0.03333, 0.36667, -0.33333,
+		-0.02901, -0.14630, -0.10926, 0.12963,
+		0.17778, 0.06667, -0.26667, 0.33333,
+	})
+
+	assert.True(t, m42i.Equal(m42ie))
+}
+
+// Scenario: Multiplying a product by its inverse
+// Given the following 4x4 matrix A:
+// | 3|-9| 7| 3|
+// | 3|-8| 2|-9|
+// |-4| 4| 4| 1|
+// |-6| 5|-1| 1|
+// And the following 4x4 matrix B:
+// | 8| 2| 2| 2|
+// | 3|-1| 7| 0|
+// | 7| 0| 5| 4|
+// | 6|-2| 0| 5|
+// And C ← A * B
+// Then C * inverse(B) = A
+
+func TestMatix4MultiInversion(t *testing.T) {
+
+	m4a := NewMatrix4([]float64{
+		3, -9, 7, 3,
+		3, -8, 2, -9,
+		-4, 4, 4, 1,
+		-6, 5, -1, 1,
+	})
+
+	m4b := NewMatrix4([]float64{
+		8, 2, 2, 2,
+		3, -1, 7, 0,
+		7, 0, 5, 4,
+		6, -2, 0, 5,
+	})
+
+	m4c := m4a.Multi(m4b)
+
+	m4r := m4c.Multi(m4b.Invert())
+
+	assert.True(t, m4a.Equal(m4r))
 }

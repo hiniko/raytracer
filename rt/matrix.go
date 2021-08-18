@@ -18,7 +18,7 @@ type Matrix interface {
 	Minor(row, col int) float64
 	Cofactor(row, col int) float64
 	IsInvertable() bool
-	Inverse() Matrix
+	Invert() Matrix
 }
 
 func MatrixCheckSet(v []float64, m Matrix) {
