@@ -90,10 +90,10 @@ func TestTupleEquals(t *testing.T) {
 
 	assert.True(t, t5.Equals(t6), "Tuples should be equal up to Epslion (SMALL_NUMBER_F64)")
 
-	t7 := NewTuple(1.00001, -1.2, 1.3, 0)
-	t8 := NewTuple(1.00002, -1.2, 1.3, 0)
+	t7 := NewTuple(1.00002, -1.2, 1.3, 0)
+	t8 := NewTuple(1.00001, -1.2, 1.3, 0)
 
-	assert.False(t, t7.Equals(t8), "Tuples should not be equal as they are bigger than Epsilion (SMALL_NUMBER_F64)")
+	assert.False(t, t7.Equals(t8), "Tuples should not be equal as they are bigger than Epsilion (SMALL_NUMBER_F64) \n %#v != %#v", t7, t8)
 }
 
 // Scenario: Adding two tuples

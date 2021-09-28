@@ -12,10 +12,10 @@ import (
 	"time"
 )
 
-const SMALL_NUMBER_F64 float64 = 0.00001
+const SMALL_NUMBER_F64 float64 = 0.000001
 
 func Equal(a float64, b float64) bool {
-	return math.Abs(a-b) < SMALL_NUMBER_F64
+	return math.Abs(a-b) <= SMALL_NUMBER_F64
 }
 
 // Convert float 64 To int, clamping between 0 and 255 and rounding up
