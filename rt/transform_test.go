@@ -180,3 +180,29 @@ func TestTranformRotationZ(t *testing.T) {
 	assert.True(t, p1_half.Equals(p1_half_e))
 	assert.True(t, p1_full.Equals(p1_full_e))
 }
+
+// Given p ← point(1, 0, 1)
+// And A ← rotation_x(π / 2)
+// And B ← scaling(5, 5, 5)
+// And C ← translation(10, 5, 7)
+// When T ← C * B * A
+// Then T * p = point(15, 0, 7)
+func TestTransformChaining(t *testing.T) {
+
+	p1 := NewPoint(1, 0, 1)
+	// Note the reverse operations here C * B * A
+	t1 := NewTransform().Translate(10, 5, 7).Scale(5, 5, 5).RotateX(math.Pi / 2)
+
+	pe := NewPoint(15, 0, 7)
+	pr := t1.TMulti(p1)
+
+	assert.True(t, pr.Equals(pe))
+}
+
+// Scenario: A shearing transformation moves x in proportion to y
+// Given transform ← shearing(1, 0, 0, 0, 0, 0)
+// And p ← point(2, 3, 4)
+// Then transform * p = point(5, 3, 4)
+func TestTransformSheer(t *testing.T) {
+
+}

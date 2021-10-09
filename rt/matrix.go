@@ -232,15 +232,18 @@ func (a *Matrix4) IMulti(b Matrix) {
 
 	ar, ac := a.Dims()
 
+	rd := make([]float64, ar*ac)
 	for r := 0; r < ar; r++ {
 		for c := 0; c < ac; c++ {
-			a.values[ar*r+c] =
+			rd[ar*r+c] =
 				a.At(r, 0)*b.At(0, c) +
 					a.At(r, 1)*b.At(1, c) +
 					a.At(r, 2)*b.At(2, c) +
 					a.At(r, 3)*b.At(3, c)
 		}
 	}
+
+	copy(a.values, rd)
 }
 
 func (a *Matrix4) TMulti(b *Tuple) *Tuple {
