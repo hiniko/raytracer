@@ -1,21 +1,66 @@
 package rt
 
+import (
+	"math"
+)
+
 type Transform = Matrix4
 
-func NewTranslation(x, y, z float64) *Transform {
+func NewTransform() *Transform {
 	return NewMatrix4([]float64{
-		1, 0, 0, x,
-		0, 1, 0, y,
-		0, 0, 1, z,
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
 		0, 0, 0, 1,
 	})
 }
 
-func NewScaling(x, y, z float64) *Transform {
-	return NewMatrix4([]float64{
+func (t *Transform) Translate(x, y, z float64) *Transform {
+	t.IMulti(NewMatrix4([]float64{
+		1, 0, 0, x,
+		0, 1, 0, y,
+		0, 0, 1, z,
+		0, 0, 0, 1,
+	}))
+	return t
+}
+
+func (t *Transform) Scale(x, y, z float64) *Transform {
+	t.IMulti(NewMatrix4([]float64{
 		x, 0, 0, 0,
 		0, y, 0, 0,
 		0, 0, z, 0,
 		0, 0, 0, 1,
-	})
+	}))
+	return t
+}
+
+func (t *Transform) RotateX(rads float64) *Transform {
+	t.IMulti(NewMatrix4([]float64{
+		1, 0, 0, 0,
+		0, math.Cos(rads), -math.Sin(rads), 0,
+		0, math.Sin(rads), math.Cos(rads), 0,
+		0, 0, 0, 1,
+	}))
+	return t
+}
+
+func (t *Transform) RotateY(rads float64) *Transform {
+	t.IMulti(NewMatrix4([]float64{
+		math.Cos(rads), 0, math.Sin(rads), 0,
+		0, 1, 0, 0,
+		-math.Sin(rads), 0, math.Cos(rads), 0,
+		0, 0, 0, 1,
+	}))
+	return t
+}
+
+func (t *Transform) RotateZ(rads float64) *Transform {
+	t.IMulti(NewMatrix4([]float64{
+		math.Cos(rads), -math.Sin(rads), 0, 0,
+		math.Sin(rads), math.Cos(rads), 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1,
+	}))
+	return t
 }

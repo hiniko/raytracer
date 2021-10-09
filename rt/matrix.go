@@ -226,6 +226,23 @@ func (a *Matrix4) Multi(b Matrix) Matrix {
 	return NewMatrix4(rd)
 }
 
+// IMulti is an in place multiplier
+func (a *Matrix4) IMulti(b Matrix) {
+	MatrixDimsCheck(a, b)
+
+	ar, ac := a.Dims()
+
+	for r := 0; r < ar; r++ {
+		for c := 0; c < ac; c++ {
+			a.values[ar*r+c] =
+				a.At(r, 0)*b.At(0, c) +
+					a.At(r, 1)*b.At(1, c) +
+					a.At(r, 2)*b.At(2, c) +
+					a.At(r, 3)*b.At(3, c)
+		}
+	}
+}
+
 func (a *Matrix4) TMulti(b *Tuple) *Tuple {
 	ar, _ := a.Dims()
 
