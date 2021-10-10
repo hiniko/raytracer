@@ -203,6 +203,61 @@ func TestTransformChaining(t *testing.T) {
 // Given transform ← shearing(1, 0, 0, 0, 0, 0)
 // And p ← point(2, 3, 4)
 // Then transform * p = point(5, 3, 4)
+
+// Scenario: A shearing transformation moves x in proportion to z
+// Given transform ← shearing(0, 1, 0, 0, 0, 0)
+// And p ← point(2, 3, 4)
+// Then transform * p = point(6, 3, 4)
+
+// Scenario: A shearing transformation moves y in proportion to x
+// Given transform ← shearing(0, 0, 1, 0, 0, 0)
+// And p ← point(2, 3, 4)
+// Then transform * p = point(2, 5, 4)
+
+// Scenario: A shearing transformation moves y in proportion to z
+// Given transform ← shearing(0, 0, 0, 1, 0, 0)
+// And p ← point(2, 3, 4)
+// Then transform * p = point(2, 7, 4)
+
+// Scenario: A shearing transformation moves z in proportion to x
+// Given transform ← shearing(0, 0, 0, 0, 1, 0)
+// And p ← point(2, 3, 4)
+// Then transform * p = point(2, 3, 6)
+
+// Scenario: A shearing transformation moves z in proportion to y
+// Given transform ← shearing(0, 0, 0, 0, 0, 1)
+// And p ← point(2, 3, 4)
+// Then transform * p = point(2, 3, 7)
 func TestTransformSheer(t *testing.T) {
+	t1 := NewTransform().Sheer(1, 0, 0, 0, 0, 0)
+	p1 := NewPoint(2, 3, 4)
+	pr := t1.TMulti(p1)
+	pe := NewPoint(5, 3, 4)
+	assert.True(t, pr.Equals(pe))
+
+	t2 := NewTransform().Sheer(0, 1, 0, 0, 0, 0)
+	pr2 := t2.TMulti(p1)
+	pe2 := NewPoint(6, 3, 4)
+	assert.True(t, pr2.Equals(pe2))
+
+	t3 := NewTransform().Sheer(0, 0, 1, 0, 0, 0)
+	pr3 := t3.TMulti(p1)
+	pe3 := NewPoint(2, 5, 4)
+	assert.True(t, pr3.Equals(pe3))
+
+	t4 := NewTransform().Sheer(0, 0, 0, 1, 0, 0)
+	pr4 := t4.TMulti(p1)
+	pe4 := NewPoint(2, 7, 4)
+	assert.True(t, pr4.Equals(pe4))
+
+	t5 := NewTransform().Sheer(0, 0, 0, 0, 1, 0)
+	pr5 := t5.TMulti(p1)
+	pe5 := NewPoint(2, 3, 6)
+	assert.True(t, pr5.Equals(pe5))
+
+	t6 := NewTransform().Sheer(0, 0, 0, 0, 0, 1)
+	pr6 := t6.TMulti(p1)
+	pe6 := NewPoint(2, 3, 7)
+	assert.True(t, pr6.Equals(pe6))
 
 }
