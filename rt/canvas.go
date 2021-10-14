@@ -2,6 +2,10 @@ package rt
 
 import (
 	"fmt"
+	"image"
+	"image/color"
+	"image/png"
+	"os"
 	"strings"
 )
 
@@ -37,6 +41,33 @@ func (ca *Canvas) Get(x, y int) *Color {
 		return nil
 	}
 	return ca.Data[idx]
+}
+
+func (ca *Canvas) ToPNG(filename string) {
+
+	f, err := os.Create(filename)
+
+	if err != nil {
+		fmt.Printf("Failed to create file %s - %s", filename, err.Error())
+		return
+	}
+
+	img := image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{ca.Width, ca.Height}})
+
+	for p := 0; p < len(ca.Data); p++ {
+		d := ca.Data[p]
+
+		y := int(p / ca.Width)
+		x := int(p % ca.Width)
+
+		if ca.Data[p] != nil {
+			img.SetRGBA(x, y, color.RGBA{uint8(d.X), uint8(d.Y), uint8(d.Z), 255})
+		} else {
+			img.SetRGBA(x, y, color.RGBA{0, 0, 0, 255})
+		}
+
+	}
+	png.Encode(f, img)
 }
 
 // I am dumb and this could be better I'm sure.

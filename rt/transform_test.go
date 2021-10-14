@@ -259,5 +259,4 @@ func TestTransformSheer(t *testing.T) {
 	pr6 := t6.TMulti(p1)
 	pe6 := NewPoint(2, 3, 7)
 	assert.True(t, pr6.Equals(pe6))
-
 }
